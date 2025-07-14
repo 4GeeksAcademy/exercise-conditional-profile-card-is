@@ -23,14 +23,76 @@ import "../style/index.css";
     }
  */
 function render(variables = {}) {
-  console.log("These are the current variables: ", variables); // print on the console
-  // here we ask the logical questions to make decisions on how to build the html
-  // if includeCover==false then we reset the cover code without the <img> tag to make the cover transparent.
-  let cover = `<div class="cover"><img src="${variables.background}" /></div>`;
-  if (variables.includeCover == false) cover = "<div class='cover'></div>";
+  const {
+    includeCover = true,
+    background = "https://images.unsplash.com/photo-1511974035430-5de47d3b95da",
+    avatarURL = "https://storage.googleapis.com/breathecode-asset-images/3c15f2d5e8b14c8b5bc801cf99a02f1c88a450303a550a875e395b9ae099fa54.jpg",
+    socialMediaPosition = "right",
+    twitter = null,
+    github = null,
+    linkedin = null,
+    instagram = null,
+    name = "",
+    lastName = "",
+    role = "",
+    country = "",
+    city = ""
+  } = variables;
 
-  // reset the website body with the new html output
-  document.querySelector("#widget_content").innerHTML = `<div class="widget">
+  const cover = includeCover
+    ? `<div class="cover"><img src="${background}" /></div>`
+    : `<div class="cover"></div>`;
+
+  const socialLinks = {
+    twitter: twitter
+      ? `<li><a href="https://twitter.com/${twitter}"><i class="fa fa-twitter"></i></a></li>`
+      : "",
+    github: github
+      ? `<li><a href="https://github.com/${github}"><i class="fa fa-github"></i></a></li>`
+      : "",
+    linkedin: linkedin
+      ? `<li><a href="https://linkedin.com/in/${linkedin}"><i class="fa fa-linkedin"></i></a></li>`
+      : "",
+    instagram: instagram
+      ? `<li><a href="https://instagram.com/${instagram}"><i class="fa fa-instagram"></i></a></li>`
+      : ""
+  };
+
+  document.querySelector("#widget_content").innerHTML = `
+    <div class="widget">
+      ${cover}
+      <img src="${avatarURL}" class="photo" />
+      <h1>${name} ${lastName}</h1>
+      <h2>${role}</h2>
+      <h3>${city}${city && country ? ", " : ""}${country}</h3>
+      <ul class="${socialMediaPosition}">
+        ${socialLinks.twitter}
+        ${socialLinks.github}
+        ${socialLinks.linkedin}
+        ${socialLinks.instagram}
+      </ul>
+    </div>
+  `;
+  n;
+  document.querySelector("#widget_content").innerHTML = `
+    <div class="widget">
+      ${cover}
+      <img src="${variables.avatarURL ||
+        "https://via.placeholder.com/150"}" class="photo" />
+      <h1>${fullName}</h1>
+      <h2>${role}</h2>
+      <h3>${location}</h3>
+      <ul class="${socialPositionClass}">
+        ${twitterLink}
+        ${githubLink}
+        ${linkedinLink}
+        ${instagramLink}
+      </ul>
+    </div>
+  `;
+}
+// reset the website body with the new html output
+document.querySelector("#widget_content").innerHTML = `<div class="widget">
             ${cover}
           <img src="${variables.avatarURL}" class="photo" />
           <h1>Lucy Boilett</h1>
@@ -44,7 +106,6 @@ function render(variables = {}) {
           </ul>
         </div>
     `;
-}
 
 /**
  * Don't change any of the lines below, here is where we do the logic for the dropdowns
