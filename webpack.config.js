@@ -1,13 +1,10 @@
 const path = require('path');
-
 const PrettierPlugin = require("./_utils/prettier.js");
-const cleanStack = require("./_utils/clean-stack.js");
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const ErrorOverlayPlugin = require('error-overlay-webpack-plugin');
-const WebpackErrorReporting = require('bc-webpack-error-reporting-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const port = 3000;
+
 let publicUrl = `http://localhost:${port}`;
 if (process.env.GITPOD_WORKSPACE_URL) {
   const [schema, host] = process.env.GITPOD_WORKSPACE_URL.split('://');
@@ -22,57 +19,40 @@ module.exports = {
     filename: 'main.bundle.js',
     sourceMapFilename: '[name].js.map'
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   devServer: {
     historyApiFallback: true,
     static: {
-      publicPath: publicUrl
+      directory: path.resolve(__dirname, 'public'),
+      publicPath: '/',
     },
     client: {
-      logging: 'warn'
-    }
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+      logging: 'warn',
+    },
+    port,
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: ['babel-loader'] // ✅ eslint-loader eliminado
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      },
+      { test: /\.js$/, exclude: /node_modules/, use: ['babel-loader'] },
+      { test: /\.css$/, use: ['style-loader', 'css-loader'] },
       {
         test: /\.(png|svg|jpg|gif|ico)$/,
-        use: {
-          loader: 'file-loader',
-          options: { name: '[name].[ext]' }
-        }
+        use: { loader: 'file-loader', options: { name: '[name].[ext]' } }
       },
-      {
-        test: /\.html$/i,
-        use: {
-          loader: 'html-loader',
-          options: {
-            attributes: false
-          }
-        }
-      }
+      { test: /\.html$/i, use: { loader: 'html-loader', options: { attributes: false } } }
     ]
   },
   plugins: [
-    new FriendlyErrorsWebpackPlugin({
-      // additionalFormatters: [cleanStack]
-    }),
-    new ErrorOverlayPlugin(),
+    new FriendlyErrorsWebpackPlugin(),
     new HtmlWebpackPlugin({
-      filename: "index.html",
-      template: "src/index.html",
-      favicon: "4geeks.ico"
+      filename: 'index.html',
+      template: 'src/index.html',
+      favicon: '4geeks.ico'
     }),
-    new PrettierPlugin({
-      failSilently: true
-    }),
+    new PrettierPlugin({ failSilently: true })
   ]
 };

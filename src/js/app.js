@@ -32,55 +32,50 @@ function render(variables = {}) {
     github = null,
     linkedin = null,
     instagram = null,
-    name = "",
-    lastName = "",
-    role = "",
-    country = "",
-    city = ""
+    name = null,
+    lastName = null,
+    role = null,
+    country = null,
+    city = null
   } = variables;
 
+  // Render cover only if includeCover is true
   const cover = includeCover
     ? `<div class="cover"><img src="${background}" /></div>`
     : `<div class="cover"></div>`;
 
-  const socialLinks = {
-    twitter: twitter
-      ? `<li><a href="https://twitter.com/${twitter}"><i class="fa fa-twitter"></i></a></li>`
-      : "",
-    github: github
-      ? `<li><a href="https://github.com/${github}"><i class="fa fa-github"></i></a></li>`
-      : "",
-    linkedin: linkedin
-      ? `<li><a href="https://linkedin.com/in/${linkedin}"><i class="fa fa-linkedin"></i></a></li>`
-      : "",
-    instagram: instagram
-      ? `<li><a href="https://instagram.com/${instagram}"><i class="fa fa-instagram"></i></a></li>`
-      : ""
-  };
+  // Construimos nombre completo sólo si hay al menos uno
+  const fullName = [name, lastName].filter(Boolean).join(" ") || "";
 
+  // Ubicación: ciudad y país, si existen
+  const location = [city, country].filter(Boolean).join(", ") || "";
+
+  // Clase para la posición de redes sociales (usa "position-left" o "position-right")
+  const socialPositionClass = socialMediaPosition.startsWith("position-")
+    ? socialMediaPosition
+    : `position-${socialMediaPosition}`;
+
+  // Links sociales sólo si existen las variables
+  const twitterLink = twitter
+    ? `<li><a href="https://twitter.com/${twitter}" target="_blank"><i class="fa fa-twitter"></i></a></li>`
+    : "";
+  const githubLink = github
+    ? `<li><a href="https://github.com/${github}" target="_blank"><i class="fa fa-github"></i></a></li>`
+    : "";
+  const linkedinLink = linkedin
+    ? `<li><a href="https://linkedin.com/in/${linkedin}" target="_blank"><i class="fa fa-linkedin"></i></a></li>`
+    : "";
+  const instagramLink = instagram
+    ? `<li><a href="https://instagram.com/${instagram}" target="_blank"><i class="fa fa-instagram"></i></a></li>`
+    : "";
+
+  // Renderizamos el widget
   document.querySelector("#widget_content").innerHTML = `
     <div class="widget">
       ${cover}
       <img src="${avatarURL}" class="photo" />
-      <h1>${name} ${lastName}</h1>
-      <h2>${role}</h2>
-      <h3>${city}${city && country ? ", " : ""}${country}</h3>
-      <ul class="${socialMediaPosition}">
-        ${socialLinks.twitter}
-        ${socialLinks.github}
-        ${socialLinks.linkedin}
-        ${socialLinks.instagram}
-      </ul>
-    </div>
-  `;
-  n;
-  document.querySelector("#widget_content").innerHTML = `
-    <div class="widget">
-      ${cover}
-      <img src="${variables.avatarURL ||
-        "https://via.placeholder.com/150"}" class="photo" />
       <h1>${fullName}</h1>
-      <h2>${role}</h2>
+      <h2>${role || ""}</h2>
       <h3>${location}</h3>
       <ul class="${socialPositionClass}">
         ${twitterLink}
@@ -91,36 +86,16 @@ function render(variables = {}) {
     </div>
   `;
 }
-// reset the website body with the new html output
-document.querySelector("#widget_content").innerHTML = `<div class="widget">
-            ${cover}
-          <img src="${variables.avatarURL}" class="photo" />
-          <h1>Lucy Boilett</h1>
-          <h2>Web Developer</h2>
-          <h3>Miami, USA</h3>
-          <ul class="position-right">
-            <li><a href="https://twitter.com/4geeksacademy"><i class="fab fa-twitter"></i></a></li>
-            <li><a href="https://github.com/4geeksacademy"><i class="fab fa-github"></i></a></li>
-            <li><a href="https://linkedin.com/school/4geeksacademy"><i class="fab fa-linkedin"></i></a></li>
-            <li><a href="https://instagram.com/4geeksacademy"><i class="fab fa-instagram"></i></a></li>
-          </ul>
-        </div>
-    `;
 
 /**
  * Don't change any of the lines below, here is where we do the logic for the dropdowns
  */
 window.onload = function() {
   window.variables = {
-    // if includeCover is true the algorithm should show the cover image
     includeCover: true,
-    // this is the image's url that will be used as a background for the profile cover
     background: "https://images.unsplash.com/photo-1511974035430-5de47d3b95da",
-    // this is the url for the profile avatar
     avatarURL: "https://randomuser.me/api/portraits/women/42.jpg",
-    // social media bar position (left or right)
     socialMediaPosition: "position-left",
-    // social media usernames
     twitter: null,
     github: null,
     linkedin: null,
@@ -131,12 +106,11 @@ window.onload = function() {
     country: null,
     city: null
   };
-  render(window.variables); // render the card for the first time
+  render(window.variables);
 
   document.querySelectorAll(".picker").forEach(function(elm) {
     elm.addEventListener("change", function(e) {
-      // <- add a listener to every input
-      const attribute = e.target.getAttribute("for"); // when any input changes, collect the value
+      const attribute = e.target.getAttribute("for");
       let values = {};
       values[attribute] =
         this.value == "" || this.value == "null"
@@ -146,7 +120,7 @@ window.onload = function() {
           : this.value == "false"
           ? false
           : this.value;
-      render(Object.assign(window.variables, values)); // render again the card with new values
+      render(Object.assign(window.variables, values));
     });
   });
 };
